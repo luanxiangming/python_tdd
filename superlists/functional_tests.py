@@ -34,18 +34,27 @@ class NewVistorTest(unittest.TestCase):
 
 		table = self.browser.find_element_by_id('id_list_table')
 		rows = self.browser.find_elements_by_tag_name('tr')
-		self.assertTrue(
-			any(row.text == '1. Buy peacock feathers' for row in rows)
-			)
+		# self.assertTrue(
+		# 	any(row.text == '1. Buy peacock feathers' for row in rows),
+		# 	'New to-do item did not appear in table --its text was:\n%s' %(table.text,)
+			# )
+		self.assertIn('1: Buy peacock feathers', [row.text for row in rows])
 
 		# 页面中又显示了一个输入框，可以输入其他待办事项
 		# 用户输入了‘Use peacock feathers to make a fly’
 		# 用户做事很有条理
-		self.fail('Finish the test!')
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		inputbox.send_keys('Use peacock feathers to make a fly')
+		inputbox.send_keys(Keys.ENTER)
 
 		# 页面再次更新， 清单中显示了这两个待办事项
+		table = self.browser.find_element_by_id('id_list_table')
+		rows = self.browser.find_elements_by_tag_name('tr')
+		self.assertIn('1: Buy peacock feathers', [rows[0].text for row in rows])
+		self.assertIn('2: Use peacock feathers to make a fly', [rows[1].text for row in rows])
 
 		# 用户想知道这个网站是否会记住他的清单
+		self.fail('Finish the test!')
 
 		# 用户看到网站为他生成了一个唯一的url
 		# 而且页面中有一些文字来解说这个功能
