@@ -1,8 +1,9 @@
 from selenium import webdriver
+from django.test import LiveServerTestCase
 from selenium.webdriver.common.keys import Keys
 import unittest
 
-class NewVistorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 	"""docstring for NewVistorTest"""
 	def setUp(self):
 		self.browser = webdriver.Chrome()
@@ -18,7 +19,7 @@ class NewVistorTest(unittest.TestCase):
 
 	def test_can_start_a_list_and_retrieve_it_later(self):
 		# 用户查看应用首页
-		self.browser.get('http://localhost:8000')
+		self.browser.get(self.live_server_url)
 
 		# 用户看到网页标题和头部包含'To-Do'
 		self.assertIn('To-Do', self.browser.title)
@@ -36,6 +37,8 @@ class NewVistorTest(unittest.TestCase):
 		# 用户按回车键后页面更新了
 		# 待办事项表格中显示了‘1. Buy peacock feathers’
 		inputbox.send_keys(Keys.ENTER)
+		edith_list_url = self.browser.current_url
+		self.assertRegex(edith_list_url, '/lists/.+')
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
 
 		# 页面中又显示了一个输入框，可以输入其他待办事项
@@ -49,15 +52,38 @@ class NewVistorTest(unittest.TestCase):
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
 		self.check_for_row_in_list_table('2: Use peacock feathers to make a fly')
 
-		# 用户想知道这个网站是否会记住他的清单
-		self.fail('Finish the test!')
+		# 另一个新用户francis访问网站
 
-		# 用户看到网站为他生成了一个唯一的url
-		# 而且页面中有一些文字来解说这个功能
+		## 我们使用新浏览器会话
+		## 确保之前的用户edith的信息不会从cookie中泄露
+		self.browser.quit()
+		self.browser = webdriver.Chrome()
 
-		# 用户访问那个url发现他的待办事项列表还在
+		# francis访问首页
+		# 页面中看不到edith的清单
+		self.browser.get(self.live_server_url)
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('Buy peacock feathers', page_text)
+		self.assertNotIn('make a fly', page_text)
 
-		# 用户满意地去睡觉了
+		# francis输入一个新待办事项，新建一个清单
+		# 他不像edith那样兴趣盎然
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		inputbox.send_keys('Buy milk')
+		inputbox.send_keys(Keys.ENTER)
+
+		# francis获得了他的唯一url
+		francis_list_url = self.browser.current_url
+		self.assertRegex(francis_list_url, '/lists/.+')
+		self.assertNotEqual(francis_list_url, edith_list_url)
+
+		# 这个页面还是没有edith的清单
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('Buy peacock feathers', page_text)
+		self.assertNotIn('make a fly', page_text)
+
+		# 两个人很满意
+
 
 if __name__ == '__main__':
 	unittest.main()	
