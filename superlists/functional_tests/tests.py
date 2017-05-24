@@ -1,9 +1,10 @@
 from selenium import webdriver
 from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.keys import Keys
 import unittest
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
 	"""docstring for NewVistorTest"""
 	def setUp(self):
 		self.browser = webdriver.Chrome()
@@ -103,7 +104,7 @@ class NewVisitorTest(LiveServerTestCase):
 			512,
 			delta=5
 			)
-		
+
 
 if __name__ == '__main__':
 	unittest.main()	
