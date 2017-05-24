@@ -9,4 +9,3 @@ class Item(models.Model):
 	"""docstring for Item"""
 	text = models.TextField(default='')
 	list = models.ForeignKey(List, default=None)
-
