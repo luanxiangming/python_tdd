@@ -16,7 +16,7 @@ class ItemValidationTest(FunctionalTest):
 
 		# 用户输入内容再次提交，这次成功了
 		self.browser.find_element_by_id('id_new_item').send_keys('Buy milk\n')
-		self.check_for_row_in_list_table('1. Buy milk')
+		self.check_for_row_in_list_table('1: Buy milk')
 
 		# 用户再次输入空待办事项
 		self.browser.find_element_by_id('id_new_item').send_keys('\n')
@@ -28,4 +28,3 @@ class ItemValidationTest(FunctionalTest):
 		self.browser.find_element_by_id('id_new_item').send_keys('Make tea')
 		self.check_for_row_in_list_table('1. Buy milk')
 		self.check_for_row_in_list_table('2. Make tea')
-		
