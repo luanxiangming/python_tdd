@@ -2,4 +2,4 @@
 
 {% block header_text %}Start a new To-Do list{% endblock %}
 
-{% block form_action %}/lists/new{% endblock %}
+{% block form_action %}{% url 'lists:new_list' %}{% endblock %}
