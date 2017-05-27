@@ -28,3 +28,20 @@ class ItemValidationTest(FunctionalTest):
 		self.get_item_input_box().send_keys('Make tea')
 		self.check_for_row_in_list_table('1: Buy milk')
 		self.check_for_row_in_list_table('2: Make tea')
+
+	def test_cannot_add_duplicate_items(self):
+		# 用户访问首页，新建一个清单
+		self.browser.get(self.server_url)
+		self.get_item_input_box().send_keys('Buy wellies\n')
+		self.check_for_row_in_list_table('1: Buy wellies')
+
+		# 他不小心输入了一个重复的待办事项
+		self.get_item_input_box().send_keys('Buy wellies\n')
+
+		# 他看到一条有帮助的错误信息
+		self.check_for_row_in_list_table('1: Buy wellies')
+		error = self.browser.find_element_by_css_selector('.has-error')
+		self.assertEqual(error.text, 'You have already got this in your list')
+
+
+
