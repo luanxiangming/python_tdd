@@ -3,6 +3,10 @@ import unittest
 
 class ItemValidationTest(FunctionalTest):
 
+	def get_error_element(self):
+		return self.browser.find_element_by_css_selector('.has-error')
+
+
 	def test_cannot_add_empty_list_items(self):
 		# 用户访问首页，提交了空待办事项
 		# 输入框中没输入内容，用户按下回车键
@@ -11,7 +15,7 @@ class ItemValidationTest(FunctionalTest):
 
 		# 首页刷新并提示错误消息
 		# 提示待办事项不能为空
-		# error = self.browser.find_element_by_css_selector('.has-error')
+		# error = self.get_error_element()
 		# self.assertEqual(error.text, 'You cannot have an empty list item')
 
 		# 用户输入内容再次提交，这次成功了
@@ -21,7 +25,7 @@ class ItemValidationTest(FunctionalTest):
 		# 用户再次输入空待办事项
 		self.get_item_input_box().send_keys('\n')
 		# 在清单页面看到类似的错误消息
-		# error = self.browser.find_element_by_css_selector('.has-error')
+		# error = self.get_error_element()
 		# self.assertEqual(error.text, 'You cannot have an empty list item')
 		
 		# 输入文字之后就没问题了
@@ -40,8 +44,18 @@ class ItemValidationTest(FunctionalTest):
 
 		# 他看到一条有帮助的错误信息
 		self.check_for_row_in_list_table('1: Buy wellies')
-		error = self.browser.find_element_by_css_selector('.has-error')
+		error = self.get_error_element()
 		self.assertEqual(error.text, 'You have already got this in your list')
 
-
-
+	def test_error_messages_are_cleared_on_input(self):
+		self.browser.get(self.server_url)
+		self.get_item_input_box().send_keys('\n')
+		error = self.browser.find_elements_by_css_selector(
+			'#id_text:invalid'
+			)
+		self.assertEqual(len(error), 1)
+		self.get_item_input_box().send_keys('a')
+		error = self.browser.find_elements_by_css_selector(
+			'#id_text:invalid'
+			)
+		self.assertEqual(len(error), 0)
